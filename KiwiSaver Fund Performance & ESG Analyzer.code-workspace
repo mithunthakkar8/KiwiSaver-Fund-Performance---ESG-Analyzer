@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "path": "C:/Users/mithu/Documents/MEGA/Projects/KiwiSaver Fund Performance & ESG Analyzer"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "C:/Users/mithu/Documents/MEGA/Projects/KiwiSaver Fund Performance & ESG Analyzer/KiwiSaver.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+      "C:/Users/mithu/Documents/MEGA/Projects/KiwiSaver Fund Performance & ESG Analyzer/KiwiSaver.venv/Lib/site-packages"
+    ],
+    "python.linting.enabled": true,
+    "python.languageServer": "Pylance",
+    "python-envs.pythonProjects": []
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Current File",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+}
