@@ -450,7 +450,8 @@ class Numeric_Data_PDF_Parser:
         except Exception as e:
             logger.error(f"Error in clean_extracted_table: {str(e)}")
             return []
-
+        
+        
     @log_exceptions
     def extract_with_camelot(self, pdf_path):
         """Extract tables using Camelot"""
