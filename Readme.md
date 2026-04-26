@@ -1,204 +1,194 @@
-KiwiSaver Fund Performance & ESG Analyzer
-A comprehensive toolkit for scraping, parsing, and analyzing KiwiSaver fund data from major New Zealand providers including Milford Asset Management, Fisher Funds, and Simplicity.
+📊 KiwiSaver Fund Performance & ESG Analyzer
 
-📋 Overview
-This project automates the extraction and analysis of KiwiSaver fund information from PDF fact sheets and web dashboards. It handles:
+A modular data pipeline for scraping, extracting, and structuring KiwiSaver fund data from multiple providers (Milford, Fisher Funds, Simplicity).
+This project focuses on transforming unstructured PDFs and web data into analyzable datasets.
 
-PDF scraping from provider websites
+🚀 Overview
 
-Intelligent parsing of semi-structured PDF documents
+This project solves a non-trivial problem:
 
-Data extraction for performance metrics, fund facts, and ESG indicators
+Financial institutions publish fund data in PDFs, charts, and semi-structured formats — not APIs.
 
-Structured output to Excel and CSV formats
+This pipeline:
 
-🏗️ Project Structure
-text
-KiwiSaver Fund Performance & ESG Analyzer/
-├── scrapers/                          # Web scraping modules
-│   ├── Milford_Fund_Report_Downloader.py
-│   ├── Fisher_Funds_Scraper.py
-│   └── Simplicity_Documents_Scraper.py
-├── parsers/                           # PDF parsing modules
-│   ├── Fisher_Funds_Numeric_Tables.py
-│   ├── Milford_Asset_Numeric_Tables.py
-│   ├── MilfordAsset_Key_Value_Pairs.py
-│   └── extract_fund_facts.py
-├── scrapers/                          # Web scraping utilities
-│   ├── Fisher_Funds_Performance_Scraper.py
-│   ├── Milford_Performance_Scraper.py
-│   └── User Agent Info.py
-└── tests/                             # Unit tests
-    └── test_Fisher_Funds.py
-🚀 Features
-PDF Scraping
-Playwright-based automation for dynamic JavaScript-rendered content
+Scrapes fund documents from multiple providers
+Extracts:
+📈 Performance tables
+🧾 Key-value fund facts
+📊 Chart data (SVG → numeric)
+Cleans and normalizes the data
+Exports structured datasets (Excel / DataFrames)
+🧱 Architecture
+                ┌──────────────────────┐
+                │   Web Scrapers       │
+                │ (Playwright-based)   │
+                └─────────┬────────────┘
+                          ↓
+                ┌──────────────────────┐
+                │   Raw PDFs / CSVs    │
+                └─────────┬────────────┘
+                          ↓
+        ┌────────────────────────────────────┐
+        │      PDF Parsing Layer             │
+        │  - DBSCAN (layout reconstruction)  │
+        │  - Camelot (table extraction)      │
+        │  - pdfplumber (structured data)    │
+        └─────────┬──────────────────────────┘
+                  ↓
+        ┌──────────────────────────────┐
+        │  Data Cleaning & Normalizing │
+        └─────────┬────────────────────┘
+                  ↓
+        ┌──────────────────────────────┐
+        │ Structured Outputs (Excel/DF)│
+        └──────────────────────────────┘
+📦 Features
+🔹 1. Web Scraping
+Milford Asset Downloader
+Downloads PDFs + CSVs from dynamic UI
+Handles:
+Tabs (KiwiSaver / Investment funds)
+Shadow DOM interactions
+File:
+Fisher Funds Downloader
+Extracts document links and downloads PDFs
+Handles non-standard PDF URLs
+File:
+Simplicity Scraper
+Filters downloads by:
+Year
+Month
+Automatically organizes output folders
+File:
+🔹 2. PDF Table Extraction (Core Engine)
+Numeric_Data_PDF_Parser (Advanced Version)
 
-Smart filtering by month/year for selective downloads
+File:
 
-Headless/visible mode support for debugging
+Key capabilities:
 
-PDF Parsing
-Dual-parser strategy: Uses both PyMuPDF (fitz) and Camelot
+Dual extraction strategy
+DBSCAN → reconstruct tables from raw text spans (pre-2024 PDFs)
+Camelot → structured extraction (2024+ PDFs)
+Layout reconstruction via clustering
+Row clustering (Y-axis)
+Column clustering (X-axis)
+Smart cleaning pipeline
+Header detection
+Label column detection
+Row merging
+% normalization
+Empty column removal
+Robust logging + error handling
+Decorator-based exception tracing
+🔹 3. Key-Value Extraction (Fund Facts)
 
-Year-based parser selection: Camelot for 2024+ PDFs (table-friendly), DBSCAN clustering for older formats
+File:
 
-Key-value extraction for fund facts (Objective, Description, Fees, Asset Allocation)
+Extracts structured metadata like:
 
-Top 10 investments table extraction
+Objective
+Benchmark
+Fees
+NAV
+Duration
 
-Data Processing
-DBSCAN clustering for row/column detection in unstructured PDFs
+Approach:
 
-Intelligent header detection and table normalization
+Try pdfplumber (table-first strategy)
+Fallback to PyMuPDF + DBSCAN clustering
+🔹 4. Specialized Text Extraction
 
-Automatic Excel export with formatted sheets
+Example:
 
-📦 Dependencies
-bash
-pip install pymupdf          # PDF text extraction
-pip install camelot-py       # Table extraction (CV2-based)
-pip install pandas           # Data manipulation
-pip install numpy            # Numerical operations
-pip install scikit-learn     # DBSCAN clustering
-pip install playwright       # Web scraping
-pip install openpyxl         # Excel export
-pip install pdfplumber       # Alternative PDF parser
-After installing Playwright, install browser binaries:
+Objective + Description extraction from “Key Fund Facts”
 
-bash
-playwright install chromium
-🔧 Usage Examples
-1. Download Fact Sheets
-python
-from Milford_Fund_Report_Downloader import Fund_Report_Downloader
-from playwright.sync_api import sync_playwright
+File:
 
-download_configs = [{
-    "url": "https://milfordasset.com/documents/kiwisaver-funds-monthly-fact-sheets",
-    "folder": "Kiwisaver_Monthly_Fact_Sheets",
-    "button_selector": 'a.gcd-btn[role="button"]:has-text("Download PDF")',
-    "months": ["March", "June", "September", "December"],
-    "years": [2024, 2025]
-}]
+Uses:
 
-with sync_playwright() as playwright:
-    downloader = Fund_Report_Downloader(headless=False)
-    downloader.download_all(playwright, download_configs)
-2. Extract Numeric Tables
-python
+Positional bounding boxes
+Clustering for multi-line text reconstruction
+🔹 5. Chart Data Extraction (Advanced)
+
+File:
+
+Extracts data from SVG charts
+Converts pixel coordinates → actual values
+Uses:
+Path parsing
+Linear interpolation
+🔹 6. Testing
+
+File:
+
+Pytest-based unit tests
+Covers:
+DBSCAN grouping
+Header detection
+Data cleaning
+Edge cases
+⚙️ Installation
+git clone <repo-url>
+cd kiwisaver-analyzer
+
+pip install -r requirements.txt
+playwright install
+▶️ Usage
+1. Download Data
+from Milford_Asset_Numeric_Tables import MilfordAssetScraper
+
+scraper = MilfordAssetScraper(headless=True)
+scraper.run()
+2. Extract Performance Tables
 from Fisher_Funds_Numeric_Tables import Numeric_Data_PDF_Parser
 
 parser = Numeric_Data_PDF_Parser(
     folder_path="path/to/pdfs",
-    terms_to_search=["Top 10 investments"],
-    validation_file="Top_10_investments.xlsx",
-    x_tolerance=10,
-    y_tolerance=10
+    terms_to_search=["Investment Performance after fees as at"]
 )
+
 parser.validate_and_export()
-3. Extract Key-Value Fund Facts
-python
+3. Extract Fund Facts
 from MilfordAsset_Key_Value_Pairs import KeyValuePairTextExtractor
 
 extractor = KeyValuePairTextExtractor()
-results = extractor.extract_from_folder(
-    folder_path="path/to/pdfs",
-    keys_to_extract=["Objective", "Description", "Total Fund Fee", "Net Asset Value"]
-)
-save_to_excel(results, "fund_facts.xlsx")
-4. Extract Fund Objective & Description
-python
-from extract_fund_facts import extract_fund_facts
-
-data = extract_fund_facts("KiwiSaver_Active_Growth_Fund_April_2025.pdf")
-print(f"Objective: {data['objective']}")
-print(f"Description: {data['description']}")
-⚙️ Configuration Parameters
-Parameter	Description	Default
-x_tolerance	Horizontal tolerance for column detection (pixels)	10-20
-y_tolerance	Vertical tolerance for row detection (pixels)	8-10
-data_area_height	Height of data area below search term	160-600
-data_area_width	Width of data area from search term	255-595
-🧠 Parsing Strategy
-Camelot (2024+ PDFs)
-Better for tables with explicit borders
-
-Uses stream flavor for borderless tables
-
-DBSCAN (Pre-2024 PDFs)
-Clusters text spans by Y-coordinate for rows
-
-Clusters by X-coordinate for columns
-
-Filters out footers and non-data text
-
-📊 Output Format
-Key-Value extraction: Excel with each PDF as separate sheet (Key/Value columns)
-
-Numeric tables: Excel with preserved table structure
-
-Fund facts: Dictionary or Excel with structured data
-
-🧪 Testing
-Run unit tests:
-
-bash
-pytest tests/test_Fisher_Funds.py -v
-Test coverage includes:
-
-PDF parsing initialization
-
-DBSCAN grouping logic
-
-Table cleaning and normalization
-
-Year extraction from filenames
-
-⚠️ Known Limitations
-PDF format variations: Each provider uses different layouts
-
-Table detection: May fail with complex multi-line cells
-
-Year parsing: Requires 4-digit year in filename for method selection
-
-Playwright selectors: May break if website structure changes
-
-🔄 Future Improvements
-Add support for more providers (Generate, Booster, etc.)
-
-Integrate ESG scoring from extracted holdings
-
-Add command-line interface (CLI)
-
-Implement parallel PDF processing
-
-Add visualization module for performance trends
-
-📝 Logging
-All modules include comprehensive logging:
-
-Console output for real-time monitoring
-
-File output (pdf_parser.log, scraper.log, etc.) for debugging
-
+data = extractor.extract_from_pdf("fund.pdf", keys_to_extract)
+📊 Output
+Excel files (multi-sheet)
+Clean tabular data
+Key-value structured metadata
+Time series datasets (from charts)
+🧠 Key Techniques Used
+DBSCAN clustering (layout reconstruction)
+PDF parsing (PyMuPDF, pdfplumber, Camelot)
+Playwright automation
+SVG parsing + interpolation
+Heuristic-based data cleaning
+⚠️ Challenges Solved
+Inconsistent PDF layouts across years
+Multi-line cell reconstruction
+Missing table boundaries
+Non-tabular structured text
+Chart data extraction from SVG paths
+🔮 Roadmap
+ ESG data extraction
+ Unified schema across providers
+ Database integration (PostgreSQL / DuckDB)
+ Dashboard (Power BI / Streamlit)
+ Automated pipeline scheduling
 🤝 Contributing
-Fork the repository
 
-Create a feature branch
+Contributions are welcome — especially for:
 
-Add tests for new functionality
-
-Submit a pull request
-
+New fund providers
+Better table extraction heuristics
+Performance optimizations
 📄 License
-MIT License - see LICENSE file for details
 
-🙏 Acknowledgements
-PyMuPDF - PDF processing
+MIT License (or your choice)
 
-Camelot - Table extraction
+👤 Author
 
-Playwright - Browser automation
-
-scikit-learn - DBSCAN clustering
+Mithun M. Thakkar
+AI Engineer | Financial Data Specialist
