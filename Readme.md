@@ -158,32 +158,53 @@ data = extractor.extract_from_pdf("fund.pdf", keys_to_extract)
 ```
 
 📊 Output
+
 Excel files (multi-sheet)
+
 Clean tabular datasets
+
 Key-value structured metadata
+
 Time series datasets (from charts)
 
 🧠 Key Techniques
+
 DBSCAN clustering (layout reconstruction)
+
 PDF parsing (PyMuPDF, pdfplumber, Camelot)
+
 Playwright automation
+
 SVG parsing + interpolation
+
 Heuristic-based data cleaning
 
 ⚠️ Challenges Solved
+
 Inconsistent PDF layouts across years
+
 Multi-line cell reconstruction
+
 Missing table boundaries
+
 Non-tabular structured text
+
 Extracting data from charts
 
 🔮 Roadmap
+
  ESG data extraction
+ 
  Unified schema across providers
+ 
  Database integration (PostgreSQL / DuckDB)
+ 
  Dashboard (Power BI / Streamlit)
+ 
  Automated scheduling
+ 
 👤 Author
 
 Mithun M. Thakkar
-AI Engineer | Financial Data Specialist
+
+AI Engineer | Data Engineer
