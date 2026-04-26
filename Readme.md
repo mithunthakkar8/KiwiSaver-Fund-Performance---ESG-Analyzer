@@ -38,6 +38,8 @@ PDF Parsing Layer
 Data Cleaning & Normalization
         ↓
 Structured Outputs (Excel / DataFrames)
+```
+
 📦 Features
 🔹 1. Web Scraping
 Milford Asset Downloader
