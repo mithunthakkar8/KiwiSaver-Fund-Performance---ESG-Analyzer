@@ -40,65 +40,98 @@ Data Cleaning & Normalization
 Structured Outputs (Excel / DataFrames)
 ```
 
-📦 Features
-🔹 1. Web Scraping
-Milford Asset Downloader
-Downloads PDFs + CSVs from dynamic UI
-Handles tabs and Shadow DOM
-Fisher Funds Downloader
-Extracts document links and downloads PDFs
-Handles non-standard PDF URLs
-Simplicity Scraper
-Filters downloads by year and month
-Automatically organizes output folders
-🔹 2. PDF Table Extraction (Core Engine)
+## 📦 Features
 
-Numeric_Data_PDF_Parser
+### 🔹 1. Web Scraping
 
-Dual extraction strategy:
-DBSCAN → layout reconstruction (pre-2024 PDFs)
-Camelot → structured extraction (2024+ PDFs)
-Intelligent processing:
-Header detection
-Label column detection
-Row merging
-% normalization
-Empty column removal
-Robust logging and error handling
-🔹 3. Key-Value Extraction (Fund Facts)
-Extracts structured metadata:
-Objective
-Benchmark
-Fees
-NAV
-Duration
-Strategy:
-pdfplumber (tables)
-PyMuPDF fallback (layout-based extraction)
-🔹 4. Chart Data Extraction
-Extracts data from SVG charts
-Converts pixel coordinates → numeric values
-Uses interpolation for accuracy
-🔹 5. Testing
-Pytest-based unit tests
-Covers:
-DBSCAN grouping
-Header detection
-Data cleaning
-Edge cases
-⚙️ Installation
+**Milford Asset Downloader**
+- Downloads PDFs + CSVs from dynamic UI
+- Handles tabs (KiwiSaver / Investment funds)
+- Handles Shadow DOM interactions
+
+**Fisher Funds Downloader**
+- Extracts document links and downloads PDFs
+- Handles non-standard PDF URLs
+
+**Simplicity Scraper**
+- Filters downloads by year and month
+- Automatically organizes output folders
+
+---
+
+### 🔹 2. PDF Table Extraction (Core Engine)
+
+**Numeric_Data_PDF_Parser**
+
+- DBSCAN → layout reconstruction for messy PDFs  
+- Camelot → structured table extraction  
+- pdfplumber → structured data fallback  
+
+**Data Cleaning Capabilities**
+- Header detection  
+- Label column detection  
+- Row merging  
+- Percentage normalization  
+- Empty column removal  
+
+---
+
+### 🔹 3. Key-Value Extraction
+
+- Extracts:
+  - Objective  
+  - Benchmark  
+  - Fees  
+  - Net Asset Value (NAV)  
+
+**Approach**
+- pdfplumber (tables first)  
+- PyMuPDF fallback  
+
+---
+
+### 🔹 4. Chart Data Extraction
+
+- Extracts data from SVG charts  
+- Converts pixel coordinates → numeric values  
+- Uses interpolation for accuracy  
+
+---
+
+### 🔹 5. Testing
+
+- Pytest-based unit tests  
+- Covers:
+  - DBSCAN grouping  
+  - Header detection  
+  - Data cleaning  
+  - Edge cases  
+
+---
+
+## ⚙️ Installation
+
+```bash
 git clone <your-repo-url>
 cd kiwisaver-analyzer
 
 pip install -r requirements.txt
 playwright install
-▶️ Usage
-1. Download Data
+```
+
+## ▶️ Usage
+
+### 1. Download Data
+
+```python
 from Milford_Asset_Numeric_Tables import MilfordAssetScraper
 
 scraper = MilfordAssetScraper(headless=True)
 scraper.run()
+```
+
 2. Extract Performance Tables
+```python
 from Fisher_Funds_Numeric_Tables import Numeric_Data_PDF_Parser
 
 parser = Numeric_Data_PDF_Parser(
@@ -107,28 +140,43 @@ parser = Numeric_Data_PDF_Parser(
 )
 
 parser.validate_and_export()
+```
+
 3. Extract Fund Facts
+```python
 from MilfordAsset_Key_Value_Pairs import KeyValuePairTextExtractor
+
+keys_to_extract = [
+    "Objective",
+    "Benchmark",
+    "Base Fund Fee",
+    "Net Asset Value"
+]
 
 extractor = KeyValuePairTextExtractor()
 data = extractor.extract_from_pdf("fund.pdf", keys_to_extract)
+```
+
 📊 Output
 Excel files (multi-sheet)
 Clean tabular datasets
 Key-value structured metadata
 Time series datasets (from charts)
+
 🧠 Key Techniques
 DBSCAN clustering (layout reconstruction)
 PDF parsing (PyMuPDF, pdfplumber, Camelot)
 Playwright automation
 SVG parsing + interpolation
 Heuristic-based data cleaning
+
 ⚠️ Challenges Solved
 Inconsistent PDF layouts across years
 Multi-line cell reconstruction
 Missing table boundaries
 Non-tabular structured text
 Extracting data from charts
+
 🔮 Roadmap
  ESG data extraction
  Unified schema across providers
