@@ -1,127 +1,83 @@
-📊 KiwiSaver Fund Performance & ESG Analyzer
+# 📊 KiwiSaver Fund Performance & ESG Analyzer
 
 A modular data pipeline for scraping, extracting, and structuring KiwiSaver fund data from multiple providers (Milford, Fisher Funds, Simplicity).
+
 This project focuses on transforming unstructured PDFs and web data into analyzable datasets.
 
-🚀 Overview
+---
+
+## 🚀 Overview
 
 This project solves a non-trivial problem:
 
-Financial institutions publish fund data in PDFs, charts, and semi-structured formats — not APIs.
+> Financial institutions publish fund data in PDFs, charts, and semi-structured formats — not APIs.
 
-This pipeline:
+### This pipeline:
+- 📥 Scrapes fund documents from multiple providers  
+- 📊 Extracts:
+  - Performance tables  
+  - Key-value fund facts  
+  - Chart data (SVG → numeric)  
+- 🧹 Cleans and normalizes the data  
+- 📤 Exports structured datasets (Excel / DataFrames)
 
-Scrapes fund documents from multiple providers
-Extracts:
-📈 Performance tables
-🧾 Key-value fund facts
-📊 Chart data (SVG → numeric)
-Cleans and normalizes the data
-Exports structured datasets (Excel / DataFrames)
-🧱 Architecture
-                ┌──────────────────────┐
-                │   Web Scrapers       │
-                │ (Playwright-based)   │
-                └─────────┬────────────┘
-                          ↓
-                ┌──────────────────────┐
-                │   Raw PDFs / CSVs    │
-                └─────────┬────────────┘
-                          ↓
-        ┌────────────────────────────────────┐
-        │      PDF Parsing Layer             │
-        │  - DBSCAN (layout reconstruction)  │
-        │  - Camelot (table extraction)      │
-        │  - pdfplumber (structured data)    │
-        └─────────┬──────────────────────────┘
-                  ↓
-        ┌──────────────────────────────┐
-        │  Data Cleaning & Normalizing │
-        └─────────┬────────────────────┘
-                  ↓
-        ┌──────────────────────────────┐
-        │ Structured Outputs (Excel/DF)│
-        └──────────────────────────────┘
+---
+
+## 🧱 Architecture
+
+```text
+Web Scrapers (Playwright)
+        ↓
+Raw PDFs / CSVs
+        ↓
+PDF Parsing Layer
+  - DBSCAN (layout reconstruction)
+  - Camelot (table extraction)
+  - pdfplumber (structured data)
+        ↓
+Data Cleaning & Normalization
+        ↓
+Structured Outputs (Excel / DataFrames)
 📦 Features
 🔹 1. Web Scraping
 Milford Asset Downloader
 Downloads PDFs + CSVs from dynamic UI
-Handles:
-Tabs (KiwiSaver / Investment funds)
-Shadow DOM interactions
-File:
+Handles tabs and Shadow DOM
 Fisher Funds Downloader
 Extracts document links and downloads PDFs
 Handles non-standard PDF URLs
-File:
 Simplicity Scraper
-Filters downloads by:
-Year
-Month
+Filters downloads by year and month
 Automatically organizes output folders
-File:
 🔹 2. PDF Table Extraction (Core Engine)
-Numeric_Data_PDF_Parser (Advanced Version)
 
-File:
+Numeric_Data_PDF_Parser
 
-Key capabilities:
-
-Dual extraction strategy
-DBSCAN → reconstruct tables from raw text spans (pre-2024 PDFs)
+Dual extraction strategy:
+DBSCAN → layout reconstruction (pre-2024 PDFs)
 Camelot → structured extraction (2024+ PDFs)
-Layout reconstruction via clustering
-Row clustering (Y-axis)
-Column clustering (X-axis)
-Smart cleaning pipeline
+Intelligent processing:
 Header detection
 Label column detection
 Row merging
 % normalization
 Empty column removal
-Robust logging + error handling
-Decorator-based exception tracing
+Robust logging and error handling
 🔹 3. Key-Value Extraction (Fund Facts)
-
-File:
-
-Extracts structured metadata like:
-
+Extracts structured metadata:
 Objective
 Benchmark
 Fees
 NAV
 Duration
-
-Approach:
-
-Try pdfplumber (table-first strategy)
-Fallback to PyMuPDF + DBSCAN clustering
-🔹 4. Specialized Text Extraction
-
-Example:
-
-Objective + Description extraction from “Key Fund Facts”
-
-File:
-
-Uses:
-
-Positional bounding boxes
-Clustering for multi-line text reconstruction
-🔹 5. Chart Data Extraction (Advanced)
-
-File:
-
+Strategy:
+pdfplumber (tables)
+PyMuPDF fallback (layout-based extraction)
+🔹 4. Chart Data Extraction
 Extracts data from SVG charts
-Converts pixel coordinates → actual values
-Uses:
-Path parsing
-Linear interpolation
-🔹 6. Testing
-
-File:
-
+Converts pixel coordinates → numeric values
+Uses interpolation for accuracy
+🔹 5. Testing
 Pytest-based unit tests
 Covers:
 DBSCAN grouping
@@ -129,7 +85,7 @@ Header detection
 Data cleaning
 Edge cases
 ⚙️ Installation
-git clone <repo-url>
+git clone <your-repo-url>
 cd kiwisaver-analyzer
 
 pip install -r requirements.txt
@@ -156,10 +112,10 @@ extractor = KeyValuePairTextExtractor()
 data = extractor.extract_from_pdf("fund.pdf", keys_to_extract)
 📊 Output
 Excel files (multi-sheet)
-Clean tabular data
+Clean tabular datasets
 Key-value structured metadata
 Time series datasets (from charts)
-🧠 Key Techniques Used
+🧠 Key Techniques
 DBSCAN clustering (layout reconstruction)
 PDF parsing (PyMuPDF, pdfplumber, Camelot)
 Playwright automation
@@ -170,24 +126,13 @@ Inconsistent PDF layouts across years
 Multi-line cell reconstruction
 Missing table boundaries
 Non-tabular structured text
-Chart data extraction from SVG paths
+Extracting data from charts
 🔮 Roadmap
  ESG data extraction
  Unified schema across providers
  Database integration (PostgreSQL / DuckDB)
  Dashboard (Power BI / Streamlit)
- Automated pipeline scheduling
-🤝 Contributing
-
-Contributions are welcome — especially for:
-
-New fund providers
-Better table extraction heuristics
-Performance optimizations
-📄 License
-
-MIT License (or your choice)
-
+ Automated scheduling
 👤 Author
 
 Mithun M. Thakkar
